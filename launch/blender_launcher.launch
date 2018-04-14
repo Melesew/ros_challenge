@@ -1,0 +1,14 @@
+<launch>
+    <node
+        name="turtlesim_node"
+        pkg="turtlesim"
+        type="turtlesim_node"
+        respawn="true"
+    />
+
+    <node
+        pkg="ros_challenge"
+        type="turtle_blender.py"
+        name="turtle_blender"
+    />
+</launch>

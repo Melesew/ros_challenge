@@ -1,0 +1,11 @@
+<launch>
+    <node pkg="ros_challenge" 
+            type="image_publisher.py" 
+            name="publisher_node" 
+            output="screen"> </node>
+    
+    <node pkg="ros_challenge"
+            type="image_subscriber.py"
+            name="subscriber_node" 
+            output="screen"> </node>
+</launch>

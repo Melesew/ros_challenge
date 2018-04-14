@@ -1,0 +1,13 @@
+<launch>
+    <node
+        pkg="turtlesim"
+        name="turtlesim_node"
+        type="turtlesim_node"
+        respawn="true"
+        />
+    
+    <node pkg="ros_challenge"
+            type="fractal.py"
+            name="draw_fractal" 
+            output="screen"> </node>
+</launch>
