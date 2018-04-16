@@ -1,94 +1,64 @@
 #!/usr/bin/env python
+
 import rospy
-from geometry_msgs.msg import Twist
-PI = 3.1415926535897
-from math import pow, atan, sqrt
+from std_msgs.msg import String
+from geometry_msgs.msg import Twist, Vector3
+import math
+from math import cos, sin, tan, atan, pi, sqrt
+from turtlesim.srv import TeleportAbsolute
+import sys
+
+# def orient_turtle():
+rospy.wait_for_service('turtle1/teleport_absolute')
+turtle1_teleport_absolute = rospy.ServiceProxy('turtle1/teleport_absolute', TeleportAbsolute)
+resp1 = turtle1_teleport_absolute(5.54, 5.54, 0.0)
 
 
-def linear_move(vel_msg, speed, distance, velocity_publisher):
-    vel_msg.linear.y = 0
-    vel_msg.linear.z = 0
-    vel_msg.angular.x = 0
-    vel_msg.angular.y = 0
-    vel_msg.angular.z = 0
+def get_vel(t):
 
-    current_distance = 0
+    # if((t//1) % 4 == 0.0):
+    #     velocity_linear = 2*sin(t)
+    #     velocity_angular = 12*cos(t)
+    # else:
+    #     velocity_linear = -2*sin(t)
 
-    t0 = rospy.Time.now().to_sec()
-    while(current_distance < distance):
-        vel_msg.linear.x = speed
-        velocity_publisher.publish(vel_msg)
-        t1 = rospy.Time.now().to_sec()
-        current_distance = speed*(t1-t0)
-    vel_msg.linear.x = 0
-    vel_msg.linear.y = 0
-    vel_msg.angular.z = 0
-    velocity_publisher.publish(vel_msg)
+    #     velocity_angular = -12*cos(t)
 
+    if((t//1) % 4 == 0.0):
+        velocity_linear = 2
+        velocity_angular = 0
+    else:
+        velocity_linear = -2
+        velocity_angular = -12
 
-def rotate(vel_msg, speed_angular, angle, clockwise, velocity_publisher):
-    vel_msg.linear.x = 0
-    vel_msg.linear.y = 0
-    vel_msg.linear.z = 0
-    vel_msg.angular.x = 0
-    vel_msg.angular.y = 0
+    # if ((t//1) % 64 == 0.0):
+    #     velocity_linear = 0
+    #     velocity_angular = 0
 
-    t0 = rospy.Time.now().to_sec()
-    #Converting from angles to radians
-    angular_speed = speed_angular*2*PI/360
-    relative_angle = angle*2*PI/360
+    return [velocity_linear, velocity_angular]
 
-    current_angle = 0
+def send_vel_command():
 
-    while(current_angle < relative_angle):
-        # real_angle = atan(relative_angle)
-        # print(real_angle)
-        if clockwise:
-            vel_msg.angular.z = -abs(angular_speed)
-        else :
-            vel_msg.angular.z = abs(angular_speed)
-        velocity_publisher.publish(vel_msg)
-        t1 = rospy.Time.now().to_sec()
-        current_angle = angular_speed*(t1-t0)
-
-    vel_msg.angular.z = 0
-    vel_msg.linear.x = 0
-    vel_msg.linear.y = 0
-    velocity_publisher.publish(vel_msg)
-
-
-def draw_fractal():
+    pub = rospy.Publisher('turtle1/cmd_vel', Twist, queue_size=10)
     rospy.init_node('draw_fractal', anonymous=True)
-    velocity_publisher = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+    r = rospy.Rate(62.5)  # 62.5hz
+    while not rospy.is_shutdown():
 
-    vel_msg = Twist()
+        t = rospy.get_time()
+        print((t//1) % 4)
+        velocity_linear = get_vel(t)[0]
+        velocity_angular = get_vel(t)[1]
 
-    vel_msg.linear.x = 0
-    vel_msg.linear.y = 0
-    vel_msg.linear.z = 0
-    vel_msg.angular.x = 0
-    vel_msg.angular.y = 0
-    vel_msg.angular.z = 0
+        velocities = Twist(Vector3((velocity_linear), 0, 0), Vector3(0, 0, (velocity_angular)))
+        rospy.loginfo(velocities)
+        pub.publish(velocities)
 
-    speed_linear = 4
-    speed_angular = 100  # degrees/sec
-    angle1 = 45
-    angle2 = 135
-    distance_linear = 2
-    t0 = rospy.Time.now().to_sec()
+        r.sleep()
 
-    # for i in range(6):
-    #     linear_move(vel_msg, speed_linear, distance_linear, velocity_publisher)
-    #     rotate(vel_msg, speed_angular, angle, velocity_publisher)
-    while not rospy.is_shutdown():    
-        linear_move(vel_msg, speed_linear, 4, velocity_publisher)
-        rotate(vel_msg, speed_angular, angle2, False, velocity_publisher)
-        linear_move(vel_msg, speed_linear, distance_linear, velocity_publisher)
-        rotate(vel_msg, speed_angular, angle1, True, velocity_publisher)
 
 if __name__ == '__main__':
+
     try:
-        # Testing our function
-        draw_fractal()
+        send_vel_command()
     except rospy.ROSInterruptException:
         pass
