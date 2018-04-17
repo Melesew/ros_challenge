@@ -5,11 +5,16 @@ import socket
 import math
 from turtlesim.srv import TeleportAbsolute
 from geometry_msgs.msg import Twist
+import sys
 
-host = '127.0.0.1'
+host = "localhost"
 port = 2000
+
 # create socket object
+
 sock = socket.socket()
+# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 sock.connect((host, port))
 
 
@@ -32,25 +37,21 @@ def move_turtle():
     while not rospy.is_shutdown():
         
         try:
-            data = sock.recv(2000)
-            new_data = str(data).encode('ascii')
-            new_data = new_data.split(" ") # get the x and y positions 
-            if len(new_data) == 2:
-                print(float(new_data[0]), float(new_data[1]))
-                turtle_pos(float(new_data[0])+5, float(new_data[1])+3, 0)
-                msg.linear.x = float(new_data[0])
-                msg.angular.z = float(new_data[1])
-                publisher.publish(msg)
-            new_data =  float(new_data)
-            m = float(new_data)
-            msg.linear.x = new_data
+            data = sock.recv(port)
+
+            coordinates = data.decode('ascii')
+   
+            xcoordinate, ycoordinate = coordinates.split(" ")[0], coordinates.split(" ")[1]  # get the x and y positions
+
+            if (xcoordinate, ycoordinate):
+                print(float(xcoordinate), float(ycoordinate))
+                turtle_pos(float(xcoordinate)+5, float(ycoordinate)+3, 0)
         except:
             print ("error")
-        sock.close()
+        # sock.close()
 
 if __name__ == '__main__':
     try:
-        # Testing our function
         move_turtle()
     except rospy.ROSInterruptException:
         pass
