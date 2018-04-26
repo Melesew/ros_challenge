@@ -1,6 +1,6 @@
 # ros_challenge
 
-#Requirements
+# Requirements
 
 1. Install ros following this link http://wiki.ros.org/kinetic/Installation/Ubuntu if you are using ubuntu
    or use google if not.
@@ -16,24 +16,23 @@
 
 ---------Then-------
 
-#1. Capture an image from the webcam and convert it to grayscale.
-# Run image to grayscale converter by typing the following command
+1. Capture an image from the webcam and convert it to grayscale.
 roslaunch ros_challenge publish_subscribe_launcher.launch
 
-#2. Create interesting fractals using turtlesim.
-# Run fractale by typing the following command
+2. Create interesting fractals using turtlesim.
+Run fractale by typing the following command
 roslaunch ros_challenge fractal_launcher.launch
 
-#3. Communicate messages between ROS and blender.
+3. Communicate messages between ROS and blender.
 Open src/server.blend file using blender and then run the following in your terminal
 roslaunch ros_challenge blender_launcher.launch
 
-#4. Make the second turtle follow or chase the first one using PID motion.
-# Run chasing turtle simulation by typing the following command
+4. Make the second turtle follow or chase the first one using PID motion.
+Run chasing turtle simulation by typing the following command
 roslaunch ros_challenge turtle_chasing_launcher.launch
 
-#5. Create GUI Application to drive turtle.
-# Run GUI controlled turtle simulation by typing the following command
+5. Create GUI Application to drive turtle.
+Run GUI controlled turtle simulation by typing the following command
 rosrun ros_challenge gui_launcher.py
 
 then click the buttons to move the turtle to your direction in need.
